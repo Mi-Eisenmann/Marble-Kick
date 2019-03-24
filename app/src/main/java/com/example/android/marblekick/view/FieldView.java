@@ -21,6 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.view.View.OnTouchListener;
 
+import com.example.android.marblekick.BallMovement.BallMovement;
 import com.example.android.marblekick.MainActivity;
 import com.example.android.marblekick.R;
 import com.example.android.marblekick.VectorCalculationsCollision.Mathematics;
@@ -39,6 +40,7 @@ public class FieldView extends View {
 
     // Connection to other classes
     Mathematics mathematics = new Mathematics();
+    BallMovement ballMovement = new BallMovement();
 
     public static final int INITIAL_ANIMATION_DURATION = 6000; //6 SECONDS
     public static final Random random = new Random();
@@ -51,14 +53,14 @@ public class FieldView extends View {
     private SharedPreferences preferences;
     //Variables that manage the game
     private int spotsTouched;
-    private int level = 1;
+    public static int level = 1;
     private int viewWidth;
     private int viewHeight;
     private long animationTime;
     private boolean dialogDisplayed;
     private TextView levelTextView;
     private LinearLayout livesLinearLayout;
-    private RelativeLayout relativeLayout;
+    public static RelativeLayout relativeLayout;
     private Resources resources;
     private LayoutInflater layoutInflater;
     private Handler spotHandler;
@@ -66,45 +68,45 @@ public class FieldView extends View {
     private long startTime = 0;
     private int last_x; // Coordinates of the finger when starting the movement
     private int last_y;
-    private ImageView Ballspot;
-    private ImageView Hitspot1;
-    private ImageView Hitspot2;
-    private ImageView Hitspot3;
-    private ImageView Hitspot4;
-    private ImageView Hitspot5;
+    public static ImageView Ballspot;
+    public static ImageView Hitspot1;
+    public static ImageView Hitspot2;
+    public static ImageView Hitspot3;
+    public static ImageView Hitspot4;
+    public static ImageView Hitspot5;
 
     private float massBall = 1;
     private float massTarget = 1;
 
-    private float currentBallVelX = 0;
-    private float currentBallX;
-    private float currentBallVelY = 0;
-    private float currentBallY;
+    public static float currentBallVelX = 0;
+    public static float currentBallX;
+    public static float currentBallVelY = 0;
+    public static float currentBallY;
 
-    private float hitBall1VelX = 0;
-    private float hitBall1X;
-    private float hitBall1VelY = 0;
-    private float hitBall1Y;
+    public static float hitBall1VelX = 0;
+    public static float hitBall1X;
+    public static float hitBall1VelY = 0;
+    public static float hitBall1Y;
 
-    private float hitBall2VelX = 0;
-    private float hitBall2X;
-    private float hitBall2VelY = 0;
-    private float hitBall2Y;
+    public static float hitBall2VelX = 0;
+    public static float hitBall2X;
+    public static float hitBall2VelY = 0;
+    public static float hitBall2Y;
 
-    private float hitBall3VelX = 0;
-    private float hitBall3X;
-    private float hitBall3VelY = 0;
-    private float hitBall3Y;
+    public static float hitBall3VelX = 0;
+    public static float hitBall3X;
+    public static float hitBall3VelY = 0;
+    public static float hitBall3Y;
 
-    private float hitBall4VelX = 0;
-    private float hitBall4X;
-    private float hitBall4VelY = 0;
-    private float hitBall4Y;
+    public static float hitBall4VelX = 0;
+    public static float hitBall4X;
+    public static float hitBall4VelY = 0;
+    public static float hitBall4Y;
 
-    private float hitBall5VelX = 0;
-    private float hitBall5X;
-    private float hitBall5VelY = 0;
-    private float hitBall5Y;
+    public static float hitBall5VelX = 0;
+    public static float hitBall5X;
+    public static float hitBall5VelY = 0;
+    public static float hitBall5Y;
 
     private ArrayList hittingList;
     private int toRemove = -1;
@@ -148,7 +150,7 @@ public class FieldView extends View {
             relativeLayout.getLocationInWindow(posOffset);
 
             // Movement of the Balls
-            Movement();
+            ballMovement.Movement();
 
             // Check for Collisions
             if (collisionConditions()){
@@ -197,143 +199,6 @@ public class FieldView extends View {
     };
 
 
-    // Calculating the sphere movements
-    public void Movement(){
-
-        int effectiveLevel;
-        if(level <= 4){effectiveLevel = level;}
-        else{effectiveLevel = 5;}
-
-        switch(effectiveLevel){
-            case 1: ballMovement(); target1Movement(); break;
-            case 2: ballMovement(); target1Movement(); target2Movement(); break;
-            case 3: ballMovement(); target1Movement(); target2Movement(); target3Movement(); break;
-            case 4: ballMovement(); target1Movement(); target2Movement(); target3Movement(); target4Movement(); break;
-            case 5: ballMovement(); target1Movement(); target2Movement(); target3Movement(); target4Movement(); target5Movement(); break;
-        }
-    }
-
-    public void ballMovement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (currentBallX <= 0 || currentBallX >= MainActivity.xWidth - SPOT_DIAMETER) {
-            currentBallVelX *= -1;
-        }
-        if (currentBallY <= 0 || currentBallY >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            currentBallVelY *= -1;
-        }
-        currentBallX += currentBallVelX;
-        currentBallY -= currentBallVelY;
-
-        Ballspot.setX(currentBallX);
-        Ballspot.setY(currentBallY);
-
-        currentBallVelX *= 0.98;
-        currentBallVelY *= 0.98;
-    }
-
-    public void target1Movement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (hitBall1X <= 0 || hitBall1X >= MainActivity.xWidth - SPOT_DIAMETER) {
-            hitBall1VelX *= -1;
-        }
-        if (hitBall1Y <= 0 || hitBall1Y >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            hitBall1VelY *= -1;
-        }
-        hitBall1X += hitBall1VelX;
-        hitBall1Y -= hitBall1VelY;
-
-        Hitspot1.setX(hitBall1X);
-        Hitspot1.setY(hitBall1Y);
-
-        hitBall1VelX *= 0.98;
-        hitBall1VelY *= 0.98;
-    }
-
-    public void target2Movement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (hitBall2X <= 0 || hitBall2X >= MainActivity.xWidth - SPOT_DIAMETER) {
-            hitBall2VelX *= -1;
-        }
-        if (hitBall2Y <= 0 || hitBall2Y >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            hitBall2VelY *= -1;
-        }
-        hitBall2X += hitBall2VelX;
-        hitBall2Y -= hitBall2VelY;
-
-        Hitspot2.setX(hitBall2X);
-        Hitspot2.setY(hitBall2Y);
-
-        hitBall2VelX *= 0.98;
-        hitBall2VelY *= 0.98;
-    }
-
-    public void target3Movement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (hitBall3X <= 0 || hitBall3X >= MainActivity.xWidth - SPOT_DIAMETER) {
-            hitBall3VelX *= -1;
-        }
-        if (hitBall3Y <= 0 || hitBall3Y >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            hitBall3VelY *= -1;
-        }
-        hitBall3X += hitBall3VelX;
-        hitBall3Y -= hitBall3VelY;
-
-        Hitspot3.setX(hitBall3X);
-        Hitspot3.setY(hitBall3Y);
-
-        hitBall3VelX *= 0.98;
-        hitBall3VelY *= 0.98;
-    }
-
-    public void target4Movement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (hitBall4X <= 0 || hitBall4X >= MainActivity.xWidth - SPOT_DIAMETER) {
-            hitBall4VelX *= -1;
-        }
-        if (hitBall4Y <= 0 || hitBall4Y >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            hitBall4VelY *= -1;
-        }
-        hitBall4X += hitBall4VelX;
-        hitBall4Y -= hitBall4VelY;
-
-        Hitspot4.setX(hitBall4X);
-        Hitspot4.setY(hitBall4Y);
-
-        hitBall4VelX *= 0.98;
-        hitBall4VelY *= 0.98;
-    }
-
-    public void target5Movement(){
-        int[] posOffset = new int [ 2 ];
-        relativeLayout.getLocationInWindow(posOffset);
-
-        if (hitBall5X <= 0 || hitBall5X >= MainActivity.xWidth - SPOT_DIAMETER) {
-            hitBall5VelX *= -1;
-        }
-        if (hitBall5Y <= 0 || hitBall5Y >= MainActivity.yHeight - posOffset[1] - SPOT_DIAMETER) {
-            hitBall5VelY *= -1;
-        }
-        hitBall5X += hitBall5VelX;
-        hitBall5Y -= hitBall5VelY;
-
-        Hitspot5.setX(hitBall5X);
-        Hitspot5.setY(hitBall5Y);
-
-        hitBall5VelX *= 0.98;
-        hitBall5VelY *= 0.98;
-    }
-
-
     // Check for spheres hitting the wall of the display/field
     public boolean wallContact(){
 
@@ -370,7 +235,6 @@ public class FieldView extends View {
         }
 
     }
-
 
     // Remove all spots
     public void fullRemoveAllSpots(){
